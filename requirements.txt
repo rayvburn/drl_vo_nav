@@ -1,5 +1,32 @@
+# Downgrading resolves an issue described here https://stackoverflow.com/a/76286033
+setuptools==65.5.0
+wheel<0.40.0
+
+# "+cu110 -f https://download.pytorch.org/whl/torch_stable.html" version marked specifically in some README
 torch==1.7.1
 pandas==1.2.1
-gym==0.18.0
+
+# "wheel.vendored.packaging.requirements.InvalidRequirement: Expected end or semicolon (after version specifier)"
+# namely "opencv-python>=3." which has been present since 0.18.0 till 0.21.0
+# Originally, this file refers to 0.18.0 but previous version, 0.17.3, lacks this problematic syntax.
+# See https://github.com/openai/gym/blob/0.17.3/setup.py
+gym==0.17.3
+
+# https://github.com/DLR-RM/stable-baselines3/blob/v1.1.0/setup.py requires "gym>=0.17"
 stable-baselines3==1.1.0
+
 tensorboard==2.4.0
+psutil
+cloudpickle
+
+pyyaml==6.0.1
+rospkg==1.5.0
+empy==3.3.4
+protobuf==3.7.1
+
+# `np.object` was a deprecated alias for the builtin `object`. To avoid this error in existing code, use `object` by itself. Doing this will not modify any behavior and is safe.
+# The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:
+#     https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+numpy==1.20.0
+
+netifaces==0.11.0

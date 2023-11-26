@@ -16,6 +16,15 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+# Install Python
+set(INSTALL_PYTHON_CMD "${CMAKE_CURRENT_SOURCE_DIR}/../install_python.sh")
+MESSAGE("Executing script installling Python: '${INSTALL_PYTHON_CMD}'")
+execute_process(COMMAND ${INSTALL_PYTHON_CMD})
+
+# Create virtualenv
+set(CREATE_VENV_CMD "${CMAKE_CURRENT_SOURCE_DIR}/../create_venv.sh")
+MESSAGE("Executing script creating the virtualenv for Python modules: '${CREATE_VENV_CMD}'")
+execute_process(COMMAND ${CREATE_VENV_CMD})
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -163,6 +172,11 @@ include_directories(
 #   scripts/my_python_script
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
+
+install(PROGRAMS
+  scripts/drl_vo_launcher.sh
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts/
+)
 
 ## Mark executables and/or libraries for installation
 # install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node

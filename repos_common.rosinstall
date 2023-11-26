@@ -1,0 +1,29 @@
+# With ROS Melodic, this file must have a valid name before .rosinstall extension
+- git:
+    local-name: drl_vo_common/turtlebot
+    uri: https://github.com/turtlebot/turtlebot.git
+    version: melodic
+- git:
+    local-name: drl_vo_common/kobuki_msgs
+    uri: https://github.com/yujinrobot/kobuki_msgs.git
+    version: melodic
+- git:
+    local-name: drl_vo_common/yujin_ocs
+    uri: https://github.com/yujinrobot/yujin_ocs.git
+    version: devel
+- git:
+    local-name: drl_vo_common/ecl_core
+    uri: https://github.com/stonier/ecl_core.git
+    version: release/0.62-melodic
+- git:
+    local-name: drl_vo_common/ecl_lite
+    uri: https://github.com/stonier/ecl_lite.git
+    version: release/0.61-melodic
+- git:
+    local-name: drl_vo_common/ecl_tools
+    uri: https://github.com/stonier/ecl_tools.git
+    version: release/0.61-melodic
+- git:
+    local-name: drl_vo_common/pedsim_ros_gazebo
+    uri: https://github.com/TempleRAIL/pedsim_ros_with_gazebo.git
+    version: drl_vo

@@ -1,0 +1,50 @@
+# With ROS Melodic, this file must have a valid name before .rosinstall extension
+#
+# in the repo below, worlds/gazebo_worlds_models_maps_for_testing_navigation probably points
+# to https://github.com/mlherd/Dataset-of-Gazebo-Worlds-Models-and-Maps
+- git:
+    local-name: drl_vo_sim/robot_gazebo
+    uri: https://github.com/TempleRAIL/robot_gazebo.git
+    version: master
+- git:
+    local-name: drl_vo_sim/pedsim_ros_gazebo
+    uri: https://github.com/TempleRAIL/pedsim_ros_with_gazebo.git
+    version: drl_vo
+- git:
+    local-name: drl_vo_sim/turtlebot2_noetic_packages
+    uri: https://github.com/zzuxzt/turtlebot2_noetic_packages.git
+    version: master
+- git:
+    local-name: drl_vo_sim/depthimage_to_laserscan
+    uri: https://github.com/ros-perception/depthimage_to_laserscan.git
+    version: melodic-devel
+# Turtlebot
+- git:
+    local-name: drl_vo_sim/turtlebot/turtlebot_simulator
+    uri: https://github.com/turtlebot/turtlebot_simulator.git
+    version: melodic
+- git:
+    local-name: drl_vo_sim/turtlebot/turtlebot
+    uri: https://github.com/turtlebot/turtlebot.git
+    version: melodic
+- git:
+    local-name: drl_vo_sim/turtlebot/turtlebot_apps
+    uri: https://github.com/turtlebot/turtlebot_apps.git
+    version: indigo
+- git:
+    local-name: drl_vo_sim/turtlebot/turtlebot_msgs
+    uri: https://github.com/turtlebot/turtlebot_msgs.git
+    version: indigo
+- git:
+    local-name: drl_vo_sim/turtlebot/turtlebot_interactions
+    uri: https://github.com/turtlebot/turtlebot_interactions.git
+    version: indigo
+# Kobuki
+- git:
+    local-name: drl_vo_sim/kobuki/kobuki
+    uri: https://github.com/yujinrobot/kobuki.git
+    version: melodic
+- git:
+    local-name: drl_vo_sim/kobuki/kobuki_core
+    uri: https://github.com/yujinrobot/kobuki_core.git
+    version: melodic
