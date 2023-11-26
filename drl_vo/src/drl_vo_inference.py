@@ -15,7 +15,6 @@ import os
 
 # ros:
 import rospy
-import tf
 import numpy as np
 import message_filters 
 
