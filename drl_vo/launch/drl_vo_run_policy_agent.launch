@@ -1,5 +1,8 @@
 <launch>
   <!-- Launches only those components that are aimed to operate in a real world setup, i.e., executing the policy -->
+  <!-- Launch configuration -->
+  <arg name="standalone_nodelet_manager" default="False"/>
+
   <!-- Robot-specific parameters -->
   <arg name="goal_tolerance" default="0.9"/>
   <arg name="min_vel_x" default="0.0"/>
@@ -47,6 +50,7 @@
 
 
   <include file="$(find drl_vo_nav)/launch/drl_vo_inference.launch">
+    <arg name="standalone_nodelet_manager" value="$(arg standalone_nodelet_manager)"/>
     <arg name="goal_tolerance" value="$(arg goal_tolerance)"/>
     <arg name="min_vel_x" value="$(arg min_vel_x)"/>
     <arg name="max_vel_x" value="$(arg max_vel_x)"/>

@@ -1,4 +1,8 @@
 <launch>
+  <!-- Launch configuration -->
+  <!-- False for robots with already running `mobile_base_nodelet_manager` nodelet -->
+  <arg name="standalone_nodelet_manager" default="False"/>
+
   <!-- Robot-specific parameters -->
   <arg name="goal_tolerance" default="0.9"/>
   <arg name="min_vel_x" default="0.0"/>
@@ -44,6 +48,7 @@
   </node>
 
   <!-- Velocity smoother for Teleop (from yocs_velocity_smoother package) -->
+  <node if="$(arg standalone_nodelet_manager)" pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
   <node pkg="nodelet" type="nodelet" name="teleop_velocity_smoother" args="load yocs_velocity_smoother/VelocitySmootherNodelet mobile_base_nodelet_manager">
     <rosparam file="$(arg vel_smoother_params_file)" command="load"/>
     <remap from="teleop_velocity_smoother/raw_cmd_vel" to="$(arg smoother_twist_input_topic)"/>
