@@ -20,6 +20,7 @@ import message_filters
 
 # custom define messages:
 from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Float64MultiArray, MultiArrayDimension
 from cnn_msgs.msg import CNN_data
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Point
@@ -72,10 +73,14 @@ class DrlInference:
         # initialize ROS objects
         self.cnn_data_sub = rospy.Subscriber("/cnn_data", CNN_data, self.cnn_data_callback)
         self.cmd_vel_pub = rospy.Publisher('/drl_cmd_vel', Twist, queue_size=10, latch=False)
+        # benchmarking only
+        self.comp_time_pub = rospy.Publisher('/drl_computation_time', Float64MultiArray, queue_size=1, latch=False)
 
 
     # Callback function for the cnn_data subscriber
     def cnn_data_callback(self, cnn_data_msg):
+        computation_time_start = rospy.Time.now()
+
         self.ped_pos = cnn_data_msg.ped_pos_map
         self.scan = cnn_data_msg.scan
         self.goal = cnn_data_msg.goal_cart
@@ -141,6 +146,8 @@ class DrlInference:
             cmd_vel.linear.x = (action[0] + 1) * (vx_max - vx_min) / 2 + vx_min
             cmd_vel.angular.z = (action[1] + 1) * (vz_max - vz_min) / 2 + vz_min
         
+        computation_time_finish = rospy.Time.now()
+        self.publish_computation_time(computation_time_start, computation_time_finish)
 
         if not np.isnan(cmd_vel.linear.x) and not np.isnan(cmd_vel.angular.z): # ensure data is valid
             self.cmd_vel_pub.publish(cmd_vel)
@@ -148,6 +155,25 @@ class DrlInference:
 
     #
     # end of function
+
+
+    def publish_computation_time(self, comp_time_start, comp_time_finish):
+        computation_time = comp_time_finish - comp_time_start
+        msg = Float64MultiArray()
+        msg.data = [float(comp_time_start.to_sec()), float(computation_time.to_sec())]
+
+        msg.layout.data_offset = 0
+        dim_stamp = MultiArrayDimension()
+        dim_stamp.label = 'stamp'
+        dim_stamp.size = 1
+        dim_stamp.stride = 1
+        msg.layout.dim.append(dim_stamp)
+        dim_ct = MultiArrayDimension()
+        dim_ct.label = 'computation_time'
+        dim_ct.size = 1
+        dim_ct.stride = 1
+        msg.layout.dim.append(dim_ct)
+        self.comp_time_pub.publish(msg)
 
 
 # begin gracefully
