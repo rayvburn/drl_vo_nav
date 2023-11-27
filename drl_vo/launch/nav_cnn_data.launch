@@ -1,20 +1,78 @@
 <launch>
+  <arg name="global_path_topic" default="move_base/NavfnROS/plan"/>
+  <arg name="global_goal_topic" default="/move_base/current_goal"/>
+  <arg name="subgoal_topic" default="cnn_goal"/>
+  <arg name="final_goal_topic" default="final_goal"/>
+  <arg name="goal_markers_topic" default="goal_markers"/>
+
+  <arg name="cnn_data_topic" default="/cnn_data"/>
+  <arg name="robot_cmd_vel_topic" default="mobile_base/commands/velocity"/>
+  <arg name="pedestrians_topic" default="/track_ped"/>
+  <arg name="laserscan_topic" default="/scan"/>
+
+  <arg name="robot_pose_topic" default="/robot_pose"/>
+
+  <arg name="robot_base_frame" default="/base_footprint"/>
+  <arg name="global_frame" default="/map"/>
+
+  <arg name="lookahead_distance" default="2.0"/>
+
+  <arg name="robot_pose_pub_rate" default="30"/>
+  <arg name="goal_recompute_rate" default="20"/>
+  <arg name="cnn_data_rate" default="20"/>
+
+  <arg name="publish_pedestrians_simulator" default="true"/>
+  <!-- only meaningful when `publish_pedestrians_simulator` is set to true -->
+  <arg name="pedsim_tracked_persons_topic" default="/pedsim_visualizer/tracked_persons"/>
+  <arg name="gazebo_model_state_srv" default="/gazebo/get_model_state"/>
+  <arg name="robot_model_name_simulator" default="mobile_base"/>
+
   <!-- Subgoal Publisher -->
   <node name="pure_pursuit" pkg="drl_vo_nav" type="pure_pursuit.py" output="screen" required="true">
-    <remap from="path" to="move_base/NavfnROS/plan"/>
-    <param name="rate"  type="double" value="20"  />
+    <remap from="path" to="$(arg global_path_topic)"/>
+    <remap from="cnn_goal" to="$(arg subgoal_topic)"/>
+    <remap from="final_goal" to="$(arg final_goal_topic)"/>
+
+    <param name="lookahead" value="$(arg lookahead_distance)"/>
+    <param name="rate" value="$(arg goal_recompute_rate)"/>
+    <param name="robot_base_frame" value="$(arg robot_base_frame)"/>
+    <param name="global_frame" value="$(arg global_frame)"/>
   </node>
 
   <!-- CNN Data  Publisher -->
-  <node name="cnn_data_pub" pkg="drl_vo_nav" type="cnn_data_pub.py"/>
+  <node name="cnn_data_pub" pkg="drl_vo_nav" type="cnn_data_pub.py" output="screen" required="true">
+    <remap from="/track_ped" to="$(arg pedestrians_topic)"/>
+    <remap from="/scan" to="$(arg laserscan_topic)"/>
+    <remap from="/cnn_goal" to="$(arg subgoal_topic)"/>
+    <remap from="/mobile_base/commands/velocity" to="$(arg robot_cmd_vel_topic)"/>
+    <remap from="/cnn_data" to="$(arg cnn_data_topic)"/>
+    <param name="rate" value="$(arg cnn_data_rate)"/>
+  </node>
 
   <!-- Robot Pose Publisher -->
-  <node name="robot_pose_pub" pkg="drl_vo_nav" type="robot_pose_pub.py"/>
+  <node name="robot_pose_pub" pkg="drl_vo_nav" type="robot_pose_pub.py" output="screen" required="true">
+    <remap from="/robot_pose" to="$(arg robot_pose_topic)"/>
+    <param name="rate" value="$(arg robot_pose_pub_rate)"/>
+    <param name="robot_base_frame" value="$(arg robot_base_frame)"/>
+    <param name="global_frame" value="$(arg global_frame)"/>
+  </node>
 
   <!-- Pedestrian Publisher -->
-  <node name="track_ped_pub" pkg="drl_vo_nav" type="track_ped_pub.py" output="screen"/>
+  <node name="track_ped_pub" pkg="drl_vo_nav" type="track_ped_pub.py" output="screen" required="true"
+    if="$(arg publish_pedestrians_simulator)"
+  >
+    <remap from="/pedsim_visualizer/tracked_persons" to="$(arg pedsim_tracked_persons_topic)"/>
+    <remap from="/gazebo/get_model_state" to="$(arg gazebo_model_state_srv)"/>
+    <remap from="/track_ped" to="$(arg pedestrians_topic)"/>
+    <param name="robot_base_frame" value="$(arg robot_base_frame)"/>
+    <param name="robot_model_name" value="$(arg robot_model_name_simulator)"/>
+  </node>
 
   <!-- Goal visualization -->
-  <node name="goal_visualize" pkg="drl_vo_nav" type="goal_visualize.py" output="screen" />
+  <node name="goal_visualize" pkg="drl_vo_nav" type="goal_visualize.py" output="screen" required="true">
+    <remap from="/move_base/current_goal" to="$(arg global_goal_topic)"/>
+    <remap from="goal_markers" to="$(arg goal_markers_topic)"/>
+    <param name="global_frame" value="$(arg global_frame)"/>
+  </node>
 
 </launch>

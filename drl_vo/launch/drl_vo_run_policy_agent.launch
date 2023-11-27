@@ -1,0 +1,88 @@
+<launch>
+  <!-- Launches only those components that are aimed to operate in a real world setup, i.e., executing the policy -->
+  <!-- Robot-specific parameters -->
+  <arg name="goal_tolerance" default="0.9"/>
+  <arg name="min_vel_x" default="0.0"/>
+  <arg name="max_vel_x" default="0.5"/>
+  <arg name="min_rot_vel" default="-2.0"/>
+  <arg name="max_rot_vel" default="+2.0"/>
+  <arg name="vel_smoother_params_file" default="$(find turtlebot_bringup)/param/defaults/smoother.yaml"/>
+
+  <arg name="lookahead_distance" default="2.0"/>
+  <arg name="robot_base_frame" default="/base_footprint"/>
+  <arg name="global_frame" default="/map"/>
+
+  <!-- ROS interfaces parameterized -->
+  <arg name="odom_topic" default="odom"/>
+  <arg name="cnn_data_topic" default="/cnn_data"/>
+
+  <arg name="drl_raw_twist_topic" default="/drl_cmd_vel"/>
+  <arg name="smoother_twist_input_topic" default="teleop_velocity_smoother/raw_cmd_vel"/>
+  <arg name="smoother_twist_output_topic" default="cmd_vel_mux/input/teleop"/>
+  <arg name="robot_cmd_vel_topic" default="mobile_base/commands/velocity"/>
+
+  <arg name="global_path_topic" default="move_base/NavfnROS/plan"/>
+  <arg name="global_goal_topic" default="/move_base/current_goal"/>
+  <arg name="subgoal_topic" default="cnn_goal"/>
+  <arg name="final_goal_topic" default="final_goal"/>
+  <arg name="goal_markers_topic" default="goal_markers"/>
+
+  <arg name="pedestrians_topic" default="/track_ped"/>
+  <arg name="laserscan_topic" default="/scan"/>
+  <arg name="robot_pose_topic" default="/robot_pose"/>
+
+  <arg name="robot_pose_pub_rate" default="30"/>
+  <arg name="goal_recompute_rate" default="20"/>
+  <arg name="cnn_data_rate" default="20"/>
+
+  <!-- A file with the model used for inferring -->
+  <arg name="model_file" default="$(find drl_vo_nav)/src/model/drl_vo.zip"/>
+
+  <!-- Publishing of the simulated pedestrians as algorithm input -->
+  <arg name="publish_pedestrians_simulator" default="true"/>
+  <!-- only meaningful when `publish_pedestrians_simulator` is set to true -->
+  <arg name="pedsim_tracked_persons_topic" default="/pedsim_visualizer/tracked_persons"/>
+  <arg name="gazebo_model_state_srv" default="/gazebo/get_model_state"/>
+  <arg name="robot_model_name_simulator" default="mobile_base"/>
+
+
+  <include file="$(find drl_vo_nav)/launch/drl_vo_inference.launch">
+    <arg name="goal_tolerance" value="$(arg goal_tolerance)"/>
+    <arg name="min_vel_x" value="$(arg min_vel_x)"/>
+    <arg name="max_vel_x" value="$(arg max_vel_x)"/>
+    <arg name="min_rot_vel" value="$(arg min_rot_vel)"/>
+    <arg name="max_rot_vel" value="$(arg max_rot_vel)"/>
+    <arg name="vel_smoother_params_file" value="$(arg vel_smoother_params_file)"/>
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="cnn_data_topic" value="$(arg cnn_data_topic)"/>
+    <arg name="drl_raw_twist_topic" value="$(arg drl_raw_twist_topic)"/>
+    <arg name="smoother_twist_input_topic" value="$(arg smoother_twist_input_topic)"/>
+    <arg name="smoother_twist_output_topic" value="$(arg smoother_twist_output_topic)"/>
+    <arg name="robot_cmd_vel_topic" value="$(arg robot_cmd_vel_topic)"/>
+    <arg name="model_file" value="$(arg model_file)"/>
+  </include>
+
+  <include file="$(find drl_vo_nav)/launch/nav_cnn_data.launch">
+    <arg name="global_path_topic" value="$(arg global_path_topic)"/>
+    <arg name="global_goal_topic" value="$(arg global_goal_topic)"/>
+    <arg name="subgoal_topic" value="$(arg subgoal_topic)"/>
+    <arg name="final_goal_topic" value="$(arg final_goal_topic)"/>
+    <arg name="goal_markers_topic" value="$(arg goal_markers_topic)"/>
+    <arg name="cnn_data_topic" value="$(arg cnn_data_topic)"/>
+    <arg name="robot_cmd_vel_topic" value="$(arg robot_cmd_vel_topic)"/>
+    <arg name="pedestrians_topic" value="$(arg pedestrians_topic)"/>
+    <arg name="laserscan_topic" value="$(arg laserscan_topic)"/>
+    <arg name="robot_pose_topic" value="$(arg robot_pose_topic)"/>
+    <arg name="robot_base_frame" value="$(arg robot_base_frame)"/>
+    <arg name="global_frame" value="$(arg global_frame)"/>
+    <arg name="lookahead_distance" value="$(arg lookahead_distance)"/>
+    <arg name="robot_pose_pub_rate" value="$(arg robot_pose_pub_rate)"/>
+    <arg name="goal_recompute_rate" value="$(arg goal_recompute_rate)"/>
+    <arg name="cnn_data_rate" value="$(arg cnn_data_rate)"/>
+    <arg name="publish_pedestrians_simulator" value="$(arg publish_pedestrians_simulator)"/>
+    <arg name="pedsim_tracked_persons_topic" value="$(arg pedsim_tracked_persons_topic)"/>
+    <arg name="gazebo_model_state_srv" value="$(arg gazebo_model_state_srv)"/>
+    <arg name="robot_model_name_simulator" value="$(arg robot_model_name_simulator)"/>
+  </include>
+
+</launch>

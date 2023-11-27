@@ -1,16 +1,56 @@
 <launch>
-  <arg name="model_file"   default="$(find drl_vo_nav)/src/model/drl_vo.zip"/>
+  <!-- Robot-specific parameters -->
+  <arg name="goal_tolerance" default="0.9"/>
+  <arg name="min_vel_x" default="0.0"/>
+  <arg name="max_vel_x" default="0.5"/>
+  <arg name="min_rot_vel" default="-2.0"/>
+  <arg name="max_rot_vel" default="+2.0"/>
+  <arg name="vel_smoother_params_file" default="$(find turtlebot_bringup)/param/defaults/smoother.yaml"/>
 
-  <include file="$(find turtlebot_teleop)/launch/includes/velocity_smoother.launch.xml"/>
+  <!-- ROS interfaces parameterized -->
+  <arg name="odom_topic" default="odom"/>
+  <arg name="cnn_data_topic" default="/cnn_data"/>
+
+  <arg name="drl_raw_twist_topic" default="/drl_cmd_vel"/>
+  <arg name="smoother_twist_input_topic" default="teleop_velocity_smoother/raw_cmd_vel"/>
+  <!-- Output topic will usually be passed to the cmd_vel multiplexer or directly to the mobile base controller -->
+  <arg name="smoother_twist_output_topic" default="cmd_vel_mux/input/teleop"/>
+  <arg name="robot_cmd_vel_topic" default="mobile_base/commands/velocity"/>
+
+  <!-- A file with the model used for inferring -->
+  <arg name="model_file" default="$(find drl_vo_nav)/src/model/drl_vo.zip"/>
 
   <!-- DRL-VO publisher -->
-  <node name="drl_vo_cmd" pkg="drl_vo_nav" type="drl_vo_inference.py" output="screen">
-    <param name="model_file" value="$(arg model_file)" type="string"/>
-  </node>
+  <!-- NOTE
+    Updating the PYTHONPATH here conflicts with the environment configuration that is set up by the
+    ppo_launcher below (different Python versions)
+  -->
+  <!-- It launches a specific DRL agent after activating the virtualenv of the package -->
+  <!-- It is crucial to pass all the remaps (of the given launch file) within the quotes -->
+  <arg name="cmd_publisher_remaps" value="
+    model_file:=$(arg model_file)
+    cnn_data_topic:=$(arg cnn_data_topic) drl_raw_twist_topic:=$(arg drl_raw_twist_topic)
+    min_vel_x:=$(arg min_vel_x) max_vel_x:=$(arg max_vel_x) min_rot_vel:=$(arg min_rot_vel) max_rot_vel:=$(arg max_rot_vel)
+    goal_tolerance:=$(arg goal_tolerance)"
+  />
+  <node name="drl_vo_launcher" pkg="drl_vo_nav" type="drl_vo_launcher.sh" output="screen" required="true"
+    args="drl_vo_nav drl_vo_cmd_publisher.launch &quot;$(arg cmd_publisher_remaps)&quot;"
+  />
 
   <!-- Mix cmd vel publisher -->
   <node name="mix_cmd_vel" pkg="drl_vo_nav" type="cmd_vel_pub.py" output="screen" >
-    <remap from="cmd_vel" to="teleop_velocity_smoother/raw_cmd_vel"/>
-  </node>  
+    <remap from="/drl_cmd_vel" to="$(arg drl_raw_twist_topic)"/>
+    <remap from="cmd_vel" to="$(arg smoother_twist_input_topic)"/>
+  </node>
+
+  <!-- Velocity smoother for Teleop (from yocs_velocity_smoother package) -->
+  <node pkg="nodelet" type="nodelet" name="teleop_velocity_smoother" args="load yocs_velocity_smoother/VelocitySmootherNodelet mobile_base_nodelet_manager">
+    <rosparam file="$(arg vel_smoother_params_file)" command="load"/>
+    <remap from="teleop_velocity_smoother/raw_cmd_vel" to="$(arg smoother_twist_input_topic)"/>
+    <remap from="teleop_velocity_smoother/smooth_cmd_vel" to="$(arg smoother_twist_output_topic)"/>
+    <!-- Robot velocity feedbacks; use the one configured as base default -->
+    <remap from="teleop_velocity_smoother/odometry" to="$(arg odom_topic)"/>
+    <remap from="teleop_velocity_smoother/robot_cmd_vel" to="$(arg robot_cmd_vel_topic)"/>
+  </node>
 
 </launch>

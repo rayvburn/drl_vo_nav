@@ -1,0 +1,26 @@
+<launch>
+  <!-- Robot-specific parameters -->
+  <arg name="goal_tolerance" default="0.9"/>
+  <arg name="min_vel_x" default="0.0"/>
+  <arg name="max_vel_x" default="0.5"/>
+  <arg name="min_rot_vel" default="-2.0"/>
+  <arg name="max_rot_vel" default="+2.0"/>
+
+  <!-- ROS interfaces parameterized -->
+  <arg name="cnn_data_topic" default="/cnn_data"/>
+  <arg name="drl_raw_twist_topic" default="/drl_cmd_vel"/>
+
+  <!-- A file with the model used for inferring -->
+  <arg name="model_file" default="$(find drl_vo_nav)/src/model/drl_vo.zip"/>
+
+  <node name="drl_vo_cmd" pkg="drl_vo_nav" type="drl_vo_inference.py" output="screen">
+    <param name="model_file" value="$(arg model_file)" type="string"/>
+    <param name="goal_tolerance" value="$(arg goal_tolerance)"/>
+    <param name="min_vel_x" value="$(arg min_vel_x)"/>
+    <param name="max_vel_x" value="$(arg max_vel_x)"/>
+    <param name="min_rot_vel" value="$(arg min_rot_vel)"/>
+    <param name="max_rot_vel" value="$(arg max_rot_vel)"/>
+    <remap from="/cnn_data" to="$(arg cnn_data_topic)"/>
+    <remap from="/drl_cmd_vel" to="$(arg drl_raw_twist_topic)"/>
+  </node>
+</launch>
