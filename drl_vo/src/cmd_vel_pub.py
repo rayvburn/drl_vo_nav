@@ -22,9 +22,7 @@ class VelSwitch:
     drl_vel_sub = None # subscriber to get the command veloctiy of human planner
     cmd_vel_pub = None # publisher to send the robot velocity in gazebo frame
     timer = None       # timer to publish cmd vel
-    
-    rate = None
-    
+
     # Constructor
     def __init__(self):
         # Initialize velocities:
@@ -34,8 +32,6 @@ class VelSwitch:
         # Initialize ROS objects
         self.drl_vel_sub = rospy.Subscriber('/drl_cmd_vel', Twist, self.drl_callback)
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1, latch=False)
-        # timer:
-        self.rate = 80  # 20 Hz velocity sampling
 
 
     # Get the command velocity from drl planner:

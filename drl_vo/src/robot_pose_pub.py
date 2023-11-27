@@ -20,12 +20,16 @@ def robot_pose_pub():
     rospy.init_node('robot_pose', anonymous=True)
     tf_listener = tf.TransformListener()
     robot_pose_pub = rospy.Publisher('/robot_pose', PoseStamped, queue_size=1)
-    rate = rospy.Rate(30) # 10hz
+    rate = rospy.get_param('~rate', 30.0)
+    robot_base_frame = rospy.get_param('~robot_base_frame', '/base_footprint')
+    global_frame = rospy.get_param('~global_frame', '/map')
+
+    rate = rospy.Rate(rate)
     while not rospy.is_shutdown():
         trans = rot = None
         # look up the current pose of the base_footprint using the tf tree
         try:
-            (trans,rot) = tf_listener.lookupTransform('/map', '/base_footprint', rospy.Time(0))
+            (trans,rot) = tf_listener.lookupTransform(global_frame, robot_base_frame, rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             rospy.logwarn('Could not get robot pose')
             trans = list([-1,-1,-1])
@@ -33,7 +37,7 @@ def robot_pose_pub():
         # publish robot pose:
         rob_pos = PoseStamped()
         rob_pos.header.stamp = rospy.Time.now()
-        rob_pos.header.frame_id = '/map'
+        rob_pos.header.frame_id = global_frame
         rob_pos.pose.position.x = trans[0]
         rob_pos.pose.position.y = trans[1]
         rob_pos.pose.position.z = trans[2]

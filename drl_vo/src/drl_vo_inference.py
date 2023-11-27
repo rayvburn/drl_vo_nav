@@ -57,6 +57,13 @@ class DrlInference:
         self.wz = 0
         self.model = None
 
+        # robot parameters
+        self.goal_tolerance = rospy.get_param('~goal_tolerance', 0.9)
+        self.min_vel_x = rospy.get_param('~min_vel_x', 0.0)
+        self.max_vel_x = rospy.get_param('~max_vel_x', 0.5)
+        self.min_rot_vel = rospy.get_param('~min_rot_vel', -2.0)
+        self.max_rot_vel = rospy.get_param('~max_rot_vel', +2.0)
+
         # load model:
         model_file = rospy.get_param('~model_file', "./model/drl_vo.zip")
         self.model = PPO.load(model_file)
@@ -83,12 +90,12 @@ class DrlInference:
             min_scan_dist = 10
 
         # if the goal is close to the robot:
-        if(np.linalg.norm(self.goal) <= 0.9):  # goal margin
+        if(np.linalg.norm(self.goal) <= self.goal_tolerance):  # goal margin
                 cmd_vel.linear.x = 0
                 cmd_vel.angular.z = 0
         elif(min_scan_dist <= 0.4): # obstacle margin
             cmd_vel.linear.x = 0
-            cmd_vel.angular.z = 0.7
+            cmd_vel.angular.z = min(0.7, self.max_rot_vel)
         else:
             # MaxAbsScaler:
             v_min = -2 
@@ -127,10 +134,10 @@ class DrlInference:
             action, _states = self.model.predict(self.observation)
             # calculate the goal velocity of the robot and send the command
             # MaxAbsScaler:
-            vx_min = 0
-            vx_max = 0.5
-            vz_min = -2 # -0.7
-            vz_max = 2 # 0.7
+            vx_min = self.min_vel_x
+            vx_max = self.max_vel_x
+            vz_min = self.min_rot_vel
+            vz_max = self.max_rot_vel
             cmd_vel.linear.x = (action[0] + 1) * (vx_max - vx_min) / 2 + vx_min
             cmd_vel.angular.z = (action[1] + 1) * (vz_max - vz_min) / 2 + vz_min
         

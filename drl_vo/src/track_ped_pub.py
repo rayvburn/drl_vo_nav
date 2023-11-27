@@ -18,6 +18,8 @@ import numpy as np
 class TrackPed:
     # Constructor
     def __init__(self):
+        self.robot_base_frame = rospy.get_param('~robot_base_frame', 'base_footprint')
+        self.robot_model_name = rospy.get_param('~robot_model_name', 'mobile_base')
         # Initialize ROS objects
         self.ped_sub = rospy.Subscriber('/pedsim_visualizer/tracked_persons', TrackedPersons, self.ped_callback)
         self.get_state_service = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
@@ -35,9 +37,8 @@ class TrackPed:
         rospy.wait_for_service("/gazebo/get_model_state")
         try:
             # get robot state:
-            model_name = 'mobile_base' 
             relative_entity_name = 'world'
-            robot = self.get_state_service(model_name, relative_entity_name)
+            robot = self.get_state_service(self.robot_model_name, relative_entity_name)
         except (rospy.ServiceException):
             rospy.logwarn("/gazebo/get_model_state service call failed") 
         
@@ -75,7 +76,7 @@ class TrackPed:
             # get pedestrian poses and velocities:
             tracked_peds = TrackedPersons()
             #tracked_peds.header = peds.header
-            tracked_peds.header.frame_id = 'base_footprint'
+            tracked_peds.header.frame_id = self.robot_base_frame
             tracked_peds.header.stamp = rospy.Time.now()
             for ped in peds.tracks:
                 tracked_ped = TrackedPerson()

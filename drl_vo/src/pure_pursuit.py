@@ -22,13 +22,6 @@ class PurePursuit:
     # parameters of the controller
     lookahead = None # lookahead distance [m]
     rate = None # rate to run controller [Hz]
-    goal_margin = None # maximum distance to goal before stopping [m]
-    
-    # parameters of the robot
-    wheel_base = None # distance between left and right wheels [m]
-    wheel_radius = None # wheel radius [m]
-    v_max = None # maximum linear velocity [m/s]
-    w_max = None # maximum angular velocity [rad/s]
     
     # ROS objects
     goal_sub = None # subscriber to get the global goal
@@ -48,14 +41,10 @@ class PurePursuit:
     # Constructor
     def __init__(self):
         # initialize parameters
-        self.lookahead = 2 #rospy.get_param('~lookahead', 5.0)
-        self.rate = rospy.get_param('~rate', 20.)
-        self.goal_margin = 0.9 #rospy.get_param('~goal_margin', 3.0)
-        
-        self.wheel_base = 0.23 #rospy.get_param('~wheel_base', 0.16)
-        self.wheel_radius = 0.025 #rospy.get_param('~wheel_radius', 0.033)
-        self.v_max = 0.5 #0.5 #rospy.get_param('~v_max', 0.22)
-        self.w_max = 5 #5 #2 #rospy.get_param('~w_max', 2.84)
+        self.lookahead = rospy.get_param('~lookahead', 2.0)
+        self.rate = rospy.get_param('~rate', 20.0)
+        self.robot_base_frame = rospy.get_param('~robot_base_frame', '/base_footprint')
+        self.global_frame = rospy.get_param('~global_frame', '/map')
     
         # Initialize ROS objects
         #self.goal_sub = rospy.Subscriber("/move_base/current_goal", PoseStamped, self.goal_callback)
@@ -87,7 +76,7 @@ class PurePursuit:
         trans = rot = None
         # look up the current pose of the base_footprint using the tf tree
         try:
-            (trans,rot) = self.tf_listener.lookupTransform('/map', '/base_footprint', rospy.Time(0))
+            (trans,rot) = self.tf_listener.lookupTransform(self.global_frame, self.robot_base_frame, rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             rospy.logwarn('Could not get robot pose')
             return (np.array([np.nan, np.nan]), np.nan)
@@ -222,7 +211,7 @@ class PurePursuit:
             trans = rot = None
             # look up the current pose of the base_footprint using the tf tree
             try:
-                (trans,rot) = self.tf_listener.lookupTransform('/map', '/base_footprint', rospy.Time(0))
+                (trans,rot) = self.tf_listener.lookupTransform(self.global_frame, self.robot_base_frame, rospy.Time(0))
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 rospy.logwarn('Could not get robot pose')
                 return (np.array([np.nan, np.nan]), np.nan)

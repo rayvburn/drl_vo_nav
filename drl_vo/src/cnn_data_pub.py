@@ -41,10 +41,10 @@ class CnnData:
         self.scan_sub = rospy.Subscriber("/scan", LaserScan, self.scan_callback)
         self.goal_sub = rospy.Subscriber("/cnn_goal", Point, self.goal_callback)
         self.vel_sub = rospy.Subscriber("/mobile_base/commands/velocity", Twist, self.vel_callback)
-        self.cnn_data_pub = rospy.Publisher('/cnn_data', CNN_data, queue_size=1, latch=False)
+        self.cnn_data_pub = rospy.Publisher("/cnn_data", CNN_data, queue_size=1, latch=False)
 
         # timer:
-        self.rate = 20  # 20 Hz velocity controller
+        self.rate = rospy.get_param("~rate", 20.0)  # 20 Hz velocity controller
         self.ts_cnt = 0  # maximum 10 timesteps
         # initialize timer for controller update
         self.timer = rospy.Timer(rospy.Duration(1./self.rate), self.timer_callback)

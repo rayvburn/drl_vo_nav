@@ -18,7 +18,7 @@ def goal_callback(goal_msg):
     
     # initialize header and color
     h = Header()
-    h.frame_id = "map"
+    h.frame_id = global_frame
     h.stamp = rospy.Time.now()
     
     # initialize goal marker message
@@ -40,6 +40,7 @@ def goal_callback(goal_msg):
 if __name__ == '__main__':
     try:
         rospy.init_node('goal_vis')
+        global_frame = rospy.get_param('~global_frame', 'map')
         goal_sub = rospy.Subscriber("/move_base/current_goal", PoseStamped, goal_callback)
         goal_vis_pub = rospy.Publisher('goal_markers', Marker, queue_size=1, latch=True)
         # spin() simply keeps python from exiting until this node is stopped
