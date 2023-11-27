@@ -167,3 +167,31 @@ You can then use the "2D Nav Goal" button on Rviz to set a random goal for the r
 }
 
 ```
+
+## Fork information
+
+Main features of this fork:
+
+- resolved `requirements` appropriate for Ubuntu 18 and ROS Melodic,
+- prepared scripts to install the package dependencies (`common` for a real-world operation, and `sim` for a simulated setup referenced by the authors)
+  - the aim was to run the navigation locally (without a Docker or so) on Ubuntu 18 and ROS Melodic,
+- `CMakeLists` modified to automatically install the required Python version and create the virtual environment during the first building (`catkin build`),
+- scripts and launch files were parameterized to run the algorithm on a different robotic system.
+
+Introduced changes might not be compatible with launching the system in `train` mode.
+
+Prerequisites:
+
+```sh
+sudo apt-get install -y \
+  wget \
+  ros-melodic-sophus
+```
+
+Once installed, simply run the all-in-one, parameterized launch:
+
+```sh
+roslaunch drl_vo_nav drl_vo_run_policy_agent.launch
+```
+
+adding the required remappings/parameters (see the source code).
