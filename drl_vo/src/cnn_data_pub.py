@@ -37,9 +37,13 @@ class CnnData:
         self.scan_all_tmp = np.zeros(1080)
 
         # initialize ROS objects
+        # requires data in "robot_base_frame", originally "/base_footprint"
         self.ped_sub = rospy.Subscriber("/track_ped", TrackedPersons, self.ped_callback)
+        # originally, data in "hokuyo_link" frame
         self.scan_sub = rospy.Subscriber("/scan", LaserScan, self.scan_callback)
+        # data in "robot_base_frame", originally "/base_footprint"
         self.goal_sub = rospy.Subscriber("/cnn_goal", Point, self.goal_callback)
+        # data in the "robot_base_frame"
         self.vel_sub = rospy.Subscriber("/mobile_base/commands/velocity", Twist, self.vel_callback)
         self.cnn_data_pub = rospy.Publisher("/cnn_data", CNN_data, queue_size=1, latch=False)
 
