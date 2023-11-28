@@ -38,3 +38,6 @@ touch ${SIM_PKG_DIR}/kobuki/kobuki_core/kobuki_driver/CATKIN_IGNORE
 # below rely on the previous entry
 touch ${SIM_PKG_DIR}/kobuki/kobuki/kobuki_node/CATKIN_IGNORE
 touch ${SIM_PKG_DIR}/kobuki/kobuki/kobuki_testsuite/CATKIN_IGNORE
+
+# delete rosinstall that is not needed at that point
+rm .rosinstall

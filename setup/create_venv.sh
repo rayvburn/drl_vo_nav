@@ -24,7 +24,7 @@ pip3.8 install --upgrade pip
 pip3.8 install -r requirements.txt
 
 # prepare turtlebot_gym sources
-cd $SCRIPT_DIR/drl_vo/src/turtlebot_gym
+cd $SCRIPT_DIR/../drl_vo/src/turtlebot_gym
 python3.8 setup.py install
 
 deactivate

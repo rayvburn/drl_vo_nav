@@ -22,3 +22,7 @@ mv \
     ${PEDSIM_DIR}/pedsim_msgs \
     drl_vo_common/
 rm -rf ${PEDSIM_DIR}/
+
+# delete rosinstall that is not needed at that point
+cd $SCRIPT_DIR/../..
+rm .rosinstall
