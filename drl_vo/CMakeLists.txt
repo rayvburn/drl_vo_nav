@@ -17,12 +17,12 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 
 # Install Python
-set(INSTALL_PYTHON_CMD "${CMAKE_CURRENT_SOURCE_DIR}/../install_python.sh")
+set(INSTALL_PYTHON_CMD "${CMAKE_CURRENT_SOURCE_DIR}/../setup/install_python.sh")
 MESSAGE("Executing script installling Python: '${INSTALL_PYTHON_CMD}'")
 execute_process(COMMAND ${INSTALL_PYTHON_CMD})
 
 # Create virtualenv
-set(CREATE_VENV_CMD "${CMAKE_CURRENT_SOURCE_DIR}/../create_venv.sh")
+set(CREATE_VENV_CMD "${CMAKE_CURRENT_SOURCE_DIR}/../setup/create_venv.sh")
 MESSAGE("Executing script creating the virtualenv for Python modules: '${CREATE_VENV_CMD}'")
 execute_process(COMMAND ${CREATE_VENV_CMD})
 
