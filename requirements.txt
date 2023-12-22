@@ -1,6 +1,6 @@
 # Downgrading resolves an issue described here https://stackoverflow.com/a/76286033
 setuptools==65.5.0
-wheel<0.40.0
+wheel==0.38.4
 
 # "+cu110 -f https://download.pytorch.org/whl/torch_stable.html" version marked specifically in some README
 torch==1.7.1
@@ -16,8 +16,8 @@ gym==0.17.3
 stable-baselines3==1.1.0
 
 tensorboard==2.4.0
-psutil
-cloudpickle
+psutil==5.9.6
+cloudpickle==1.6.0
 
 pyyaml==6.0.1
 rospkg==1.5.0
