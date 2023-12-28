@@ -180,7 +180,7 @@ class DrlInference:
 #
 
 if __name__ == '__main__':
-    rospy.init_node('drl_inference')
+    rospy.init_node('drl_inference', anonymous=False)
     drl_infe = DrlInference()
     rospy.spin()
 

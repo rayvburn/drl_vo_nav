@@ -98,7 +98,7 @@ class TrackPed:
  
 if __name__ == '__main__':
     try:
-        rospy.init_node('track_ped')
+        rospy.init_node('track_ped', anonymous=False)
         tp = TrackPed()
         # spin() simply keeps python from exiting until this node is stopped    
         rospy.spin()

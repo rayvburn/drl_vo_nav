@@ -54,7 +54,7 @@ class VelSwitch:
  
 if __name__ == '__main__':
     try:
-        rospy.init_node('mix_cmd_vel')
+        rospy.init_node('mix_cmd_vel', anonymous=False)
         VelSwitch()
         # spin() simply keeps python from exiting until this node is stopped
         rospy.spin()

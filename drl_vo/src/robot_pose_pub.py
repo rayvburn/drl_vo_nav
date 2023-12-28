@@ -17,7 +17,7 @@ from geometry_msgs.msg import Point
 import numpy as np
 
 def robot_pose_pub():
-    rospy.init_node('robot_pose', anonymous=True)
+    rospy.init_node('robot_pose', anonymous=False)
     tf_listener = tf.TransformListener()
     robot_pose_pub = rospy.Publisher('/robot_pose', PoseStamped, queue_size=1)
     rate = rospy.get_param('~rate', 30.0)

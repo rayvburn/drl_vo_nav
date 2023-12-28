@@ -52,7 +52,7 @@ class MoveBaseSeq():
         self.previous_y = 0
         self.odom_start = True
         # initialize node:
-        rospy.init_node('move_base_sequence')
+        rospy.init_node('move_base_sequence', anonymous=False)
         points_seq = rospy.get_param('~p_seq')
         # Only yaw angle required (no ratotions around x and y axes) in deg:
         yaweulerangles_seq = rospy.get_param('~yea_seq')

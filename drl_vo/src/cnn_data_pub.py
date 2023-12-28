@@ -131,7 +131,7 @@ class CnnData:
 
 if __name__ == '__main__':
     try:
-        rospy.init_node('cnn_data')
+        rospy.init_node('cnn_data', anonymous=False)
         CnnData()
         # spin() simply keeps python from exiting until this node is stopped
         rospy.spin()

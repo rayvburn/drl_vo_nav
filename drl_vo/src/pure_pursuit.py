@@ -270,7 +270,7 @@ class PurePursuit:
         
 if __name__ == '__main__':
     try:
-        rospy.init_node('pure_pursuit')
+        rospy.init_node('pure_pursuit', anonymous=False)
         PurePursuit()
         # spin() simply keeps python from exiting until this node is stopped
         rospy.spin()
